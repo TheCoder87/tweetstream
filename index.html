@@ -13,13 +13,15 @@
 <div id="tweets"></div>
 
 <script>
-  var socket = io.connect('http://localhost:3000');
-  socket.on('connect', function(data) {
-    socket.emit('join', 'Hello world from Tweetstream front page.')
-  });
-  socket.on('tweet', function(data) {
-    console.log('Front end data: ' + data);
-    $('div#tweets').append('<div class="tweet">' + data + '</div>');
+  $(function() {
+    var socket = io.connect('http://localhost:3000');
+    socket.on('connect', function(data) {
+      socket.emit('join', 'Hello world from Tweetstream front page.')
+    });
+    socket.on('tweet', function(data) {
+      console.log('Front end data: ' + data);
+      $('div#tweets').append('<div class="tweet">' + data + '</div>');
+    });
   });
 </script>
 
