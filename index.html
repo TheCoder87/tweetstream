@@ -4,18 +4,22 @@
   <meta charset="UTF-8">
   <title>Tweetstream</title>
   <script src="/socket.io/socket.io.js"></script>
+  <script src="/jquery/dist/jquery.min.js"></script>
 </head>
 <body>
 
 <h1>Welcome to Tweetstream</h1>
 
+<div id="tweets"></div>
+
 <script>
   var socket = io.connect('http://localhost:3000');
   socket.on('connect', function(data) {
-    socket.emit('join', 'Hello world from Tweetstream.')
+    socket.emit('join', 'Hello world from Tweetstream front page.')
   });
-  socket.on('messages', function(data) {
-    alert(data);
+  socket.on('tweet', function(data) {
+    console.log('Front end data: ' + data);
+    $('div#tweets').append('<div class="tweet">' + data + '</div>');
   });
 </script>
 
