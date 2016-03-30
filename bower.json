@@ -1,0 +1,26 @@
+{
+  "name": "tweetstream",
+  "description": "Streaming tweets",
+  "main": "server.js",
+  "authors": [
+    "Steve Edwards"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "streaming",
+    "tweets"
+  ],
+  "homepage": "https://github.com/wonder95/tweetstream",
+  "moduleType": [],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.2.2"
+  }
+}
