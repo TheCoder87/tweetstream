@@ -1,2 +1,5 @@
 # Environment variables
 .env
+
+#npm files
+node_modules/
