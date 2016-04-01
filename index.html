@@ -9,6 +9,9 @@
 <body>
 
 <h1>Welcome to Tweetstream</h1>
+
+<div id="messages"></div>
+
 <div id="tweets"></div>
 
 <style>
@@ -49,6 +52,10 @@
     socket.on('tweet', function(data) {
       console.log('Front end data: ' + data);
       $('div#tweets').append('<div class="tweet">' + data + '</div>');
+    });
+
+    socket.on('messages', function(message) {
+      $('div#messages').append(message);
     });
 
     socket.on('error', function(err) {
