@@ -51,7 +51,7 @@
 
     socket.on('tweet', function(data) {
       console.log('Front end data: ' + data);
-      $('div#tweets').append('<div class="tweet">' + data + '</div>');
+      $('div#tweets').prepend('<div class="tweet">' + data + '</div>');
     });
 
     socket.on('messages', function(message) {
