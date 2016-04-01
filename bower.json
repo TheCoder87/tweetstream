@@ -3,7 +3,8 @@
   "description": "Streaming tweets",
   "main": "server.js",
   "authors": [
-    "Steve Edwards"
+    "Steve Edwards",
+    "Eric Lawrence"
   ],
   "license": "ISC",
   "keywords": [
