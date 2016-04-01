@@ -15,12 +15,25 @@
 <script>
   $(function() {
     var socket = io.connect('http://localhost:3000');
+
     socket.on('connect', function(data) {
       socket.emit('join', 'Hello world from Tweetstream front page.')
     });
+
+    socket.on('status', function(twitterConnectionStatus) {
+      console.log('twitterConnectionStatus: ', twitterConnectionStatus);
+      if (!twitterConnectionStatus) {
+        $('div#tweets').append('<div class="tweet" style="background: pink; color: DarkRed; border: 1px solid red; padding: 1em;">There was an error with the Twitter credentials.</div>');
+      }
+    });
+
     socket.on('tweet', function(data) {
       console.log('Front end data: ' + data);
       $('div#tweets').append('<div class="tweet">' + data + '</div>');
+    });
+
+    socket.on('error', function(err) {
+      console.warn('Twitter error: ' + err);
     });
   });
 </script>
