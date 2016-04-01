@@ -4,14 +4,14 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var Twitter = require('twitter');
+var Twitter = require('twit');
 
 var port = process.env.PORT || 3000;
 
 var client = new Twitter({
   consumer_key: process.env.API_KEY,
   consumer_secret: process.env.API_SECRET,
-  access_token_key: process.env.ACCESS_TOKEN,
+  access_token: process.env.ACCESS_TOKEN,
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 console.log('process.env.API_KEY', process.env.API_KEY);
@@ -51,16 +51,15 @@ io.on('connection', function(socket) {
     });
   });
 
-  var stream = client.stream('statuses/filter', { track: 'tcot' }, function(stream) {
-    console.log("Inside stream function");
-    stream.on('data', function(tweet) {
-      console.log("Tweet: " + tweet.text);
-      socket.emit('tweet', tweet.text);
-    });
+  var stream = client.stream('statuses/filter', { track: 'tcot' });
+  //console.log("Inside stream function");
+  stream.on('tweet', function(tweet) {
+    console.log("Tweet: " + tweet.text);
+    socket.emit('tweet', tweet.text);
+  });
 
-    stream.on('error', function(error) {
-      // console.log("Error: " + error);
-      // socket.emit('error', error);
-    });
+  stream.on('error', function(error) {
+    console.log("Error: " + error);
+    // socket.emit('error', error);
   });
 });
