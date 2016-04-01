@@ -9,9 +9,26 @@
 <body>
 
 <h1>Welcome to Tweetstream</h1>
-
 <div id="tweets"></div>
 
+<style>
+  body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    background: #444;
+    margin: 0;
+    padding: 0.5em 0.5em 0.25em;
+    font-weight: 200;
+    color: #eee;
+  }
+  .tweet {
+    padding: 0.5em 1em;
+    border-bottom: 1px solid #eee;
+  }
+</style>
 <script>
   $(function() {
     var socket = io.connect('http://localhost:3000');
@@ -23,7 +40,9 @@
     socket.on('status', function(twitterConnectionStatus) {
       console.log('twitterConnectionStatus: ', twitterConnectionStatus);
       if (!twitterConnectionStatus) {
-        $('div#tweets').append('<div class="tweet" style="background: pink; color: DarkRed; border: 1px solid red; padding: 1em;">There was an error with the Twitter credentials.</div>');
+        $('div#tweets').append('<div class="connection-error" style="background: DarkRed; color: #fff; padding: 0.5em 1em;">There was an error with the Twitter credentials.</div>');
+      } else {
+        $('.connection-error').remove();
       }
     });
 

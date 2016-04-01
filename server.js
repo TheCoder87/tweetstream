@@ -59,8 +59,8 @@ io.on('connection', function(socket) {
     });
 
     stream.on('error', function(error) {
-      console.log("Error: " + error);
-      socket.emit('error', error);
+      // console.log("Error: " + error);
+      // socket.emit('error', error);
     });
   });
 });
