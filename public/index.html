@@ -1,69 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Tweetstream</title>
+  <meta charset="UTF-8" />
+  <title>TweetStream</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/jquery/dist/jquery.min.js"></script>
+
+  <script src="js/tweetstream-demo.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap-theme.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" />
+
+  <link rel="stylesheet" href="css/demo-front.css" />
 </head>
 <body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+     <div class="container">
+       <div class="navbar-header">
+         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+           <span class="sr-only">Toggle navigation</span>
+           <span class="icon-bar"></span>
+           <span class="icon-bar"></span>
+           <span class="icon-bar"></span>
+         </button>
+         <a class="navbar-brand" href="/"><i class="fa fa-twitter-square"></i> TweetStream</a>
+       </div>
+       <div id="navbar" class="collapse navbar-collapse">
+         <ul class="nav navbar-nav">
+           <li class="active"><a href="#">Home</a></li>
+           <li><a href="#about">About</a></li>
+           <li><a href="#contact">Contact</a></li>
+         </ul>
+       </div><!--/.nav-collapse -->
+     </div>
+   </nav>
 
-<h1>Welcome to Tweetstream</h1>
+   <div class="container">
+     <h1>Welcome to TweetStream</h1>
+     <div id="app">
+       <div id="messages"></div>
+       <div id="tweets"></div>
+     </div>
+   </div><!-- /.container -->
 
-<div id="messages"></div>
 
-<div id="tweets"></div>
-
-<style>
-  body {
-    font-family: sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  h1 {
-    background: #444;
-    margin: 0;
-    padding: 0.5em 0.5em 0.25em;
-    font-weight: 200;
-    color: #eee;
-  }
-  .tweet {
-    padding: 0.5em 1em;
-    border-bottom: 1px solid #eee;
-  }
-</style>
-<script>
-  $(function() {
-    var socket = io.connect();
-
-    socket.on('connect', function(data) {
-      socket.emit('join', 'Hello world from Tweetstream front page.')
-    });
-
-    socket.on('status', function(twitterConnectionStatus) {
-      console.log('twitterConnectionStatus: ', twitterConnectionStatus);
-      if (!twitterConnectionStatus) {
-        $('div#tweets').append('<div class="connection-error" style="background: DarkRed; color: #fff; padding: 0.5em 1em;">There was an error with the Twitter credentials.</div>');
-      } else {
-        $('.connection-error').remove();
-      }
-    });
-
-    socket.on('tweet', function(tweetObject) {
-      console.log('Front end tweetObject: ', tweetObject);
-      var text = tweetObject.text;
-      $('div#tweets').prepend('<div class="tweet">' + text + '</div>');
-    });
-
-    socket.on('messages', function(message) {
-      $('div#messages').append(message);
-    });
-
-    socket.on('error', function(err) {
-      console.warn('Twitter error: ' + err);
-    });
-  });
-</script>
 
 </body>
 </html>
