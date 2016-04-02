@@ -12,6 +12,13 @@
     "tweets"
   ],
   "author": "Steve Edwards",
+  "contributors": [
+    {
+      "name" : "Eric Lawrence",
+      "email" : "eric@squaretone.com",
+      "url" : "http://www.squaretone.com"
+    }
+  ],
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.0",
