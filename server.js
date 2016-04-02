@@ -24,10 +24,6 @@ var tweeter = TweeterLib({
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/bower_components'));
 
-app.get('/', function(req, res, next) {
-  res.sendFile(__dirname + '/index.html');
-});
-
 // Returns active stream to callback
 // Initilizes a new stream if it doesn't exist
 var getTwitterStream = function(cb) {
