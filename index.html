@@ -49,9 +49,10 @@
       }
     });
 
-    socket.on('tweet', function(data) {
-      console.log('Front end data: ' + data);
-      $('div#tweets').prepend('<div class="tweet">' + data + '</div>');
+    socket.on('tweet', function(tweetObject) {
+      console.log('Front end tweetObject: ', tweetObject);
+      var text = tweetObject.text;
+      $('div#tweets').prepend('<div class="tweet">' + text + '</div>');
     });
 
     socket.on('messages', function(message) {

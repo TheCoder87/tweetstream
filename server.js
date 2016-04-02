@@ -4,17 +4,22 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var Twitter = require('twit');
+var TweeterLib = require('./modules/tweeter');
 
 var port = process.env.PORT || 3000;
+var stream, tweeter;
 
-var client = new Twitter({
+// @TODO: Make these configurable
+var streamPath = 'statuses/filter';
+var streamParams = { track: 'tcot' };
+
+// Initialize the twitter library
+var tweeter = TweeterLib({
   consumer_key: process.env.API_KEY,
   consumer_secret: process.env.API_SECRET,
   access_token: process.env.ACCESS_TOKEN,
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
-console.log('process.env.API_KEY', process.env.API_KEY);
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/bower_components'));
@@ -23,15 +28,20 @@ app.get('/', function(req, res, next) {
   res.sendFile(__dirname + '/index.html');
 });
 
-/**
- * Make call to client to determine if Twitter auth was successful
- * @TODO: Check to see if there is a specific method to do this
- * @param  {Function} cb Callback function
- */
-var checkIfConnected = function(cb) {
-  client.get('favorites/list', function(error, tweets, response){
-    cb (!error);
-  });
+// Returns active stream to callback
+// Initilizes a new stream if it doesn't exist
+var getTwitterStream = function(cb) {
+  if (stream) {
+    // Return active Twitter stream if it exists
+    cb(null, stream);
+  } else {
+    // Create it and then return it
+    tweeter.createStream(streamPath, streamParams, function(err, newStream) {
+      // Save a reference
+      stream = newStream;
+      cb(err, newStream);
+    });
+  }
 };
 
 server.listen(port, function() {
@@ -41,25 +51,30 @@ server.listen(port, function() {
 io.on('connection', function(socket) {
   console.log('Client connected...');
 
+  // Send some configuration information to client
+  socket.emit('config', {
+    'streamPath': streamPath,
+    'streamParams': streamParams
+  });
+
   socket.on('join', function(data) {
     console.log("Join: " + data);
     socket.emit('messages', 'A client has joined.');
+  });
 
-    // Send the status of the client
-    checkIfConnected(function(isClientConnected) {
-      socket.emit('status', isClientConnected);
+  // Get a reference to the twitter stream and start broadcasting to
+  // the connected user
+  getTwitterStream(function(err, twitterStream) {
+    twitterStream.on('tweet', function(tweet) {
+      console.log('Tweet: [%s]: %s', tweet.id, tweet.user.screen_name);
+      socket.emit('tweet', tweet);
+    });
+
+    twitterStream.on('error', function(error) {
+      console.log("Error: " + error);
     });
   });
 
-  var stream = client.stream('statuses/filter', { track: 'tcot' });
-  //console.log("Inside stream function");
-  stream.on('tweet', function(tweet) {
-    console.log("Tweet: " + tweet.text);
-    socket.emit('tweet', tweet.text);
-  });
 
-  stream.on('error', function(error) {
-    console.log("Error: " + error);
-    // socket.emit('error', error);
-  });
+
 });
