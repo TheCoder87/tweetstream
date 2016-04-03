@@ -2,6 +2,9 @@
 (function(TweetStream, $) {
   var base, title, tweets, messages;
 
+  // Maximum number of tweets to display
+  var maxTweets = 10;
+
   // Do setup based on configs passed back from Socket.io
   var setupWidget = function(config) {
     console.log('setup with config', config);
@@ -60,6 +63,21 @@
     if (tweets.length) {
       var tweet = formatTweet(tweetObject);
       $(tweet).prependTo(tweets);
+      trimTweets();
+    }
+  };
+
+  // Checks if we are displaying too many tweets and trims them
+  var trimTweets = function() {
+    var currentTweets = $('.tweet', tweets);
+    var tweetCount = currentTweets.length;
+    if (tweetCount > maxTweets) {
+      $(currentTweets).each(function(id, tweetElement) {
+        if (id >= maxTweets) {
+          // Remove tweet
+          $(tweetElement).remove();
+        }
+      });
     }
   };
 
