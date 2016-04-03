@@ -62,7 +62,7 @@
     console.log(tweetObject);
     if (tweets.length) {
       var tweet = formatTweet(tweetObject);
-      $(tweet).prependTo(tweets);
+      $(tweet).prependTo(tweets).hide().fadeIn('slow');
       trimTweets();
     }
   };
