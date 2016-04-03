@@ -1,5 +1,5 @@
 // Include this libarary right after you include socket.io
-window.TweetStream = (function($) {
+(function($) {
   var TweetStream = {};
   TweetStream.socket;
 
@@ -10,8 +10,12 @@ window.TweetStream = (function($) {
       options.server = opts.server;
     }
 
+    // Make connection to Socket.io server
     TweetStream.socket = io.connect(options.server);
+    // Pass socket back to callback function
     cb(null, TweetStream.socket)
   };
-  return TweetStream;
+
+  // Store TweetStream in global namespace
+  window.TweetStream = TweetStream;
 })(jQuery);

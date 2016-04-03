@@ -45,7 +45,7 @@ server.listen(port, function() {
 });
 
 io.on('connection', function(socket) {
-  console.log('Client connected...');
+  console.log('%%%   Client connected...   %%%');
 
   // Send some configuration information to client
   socket.emit('config', {
@@ -53,24 +53,22 @@ io.on('connection', function(socket) {
     'streamParams': streamParams
   });
 
-  socket.on('join', function(data) {
-    console.log("Join: " + data);
-    socket.emit('messages', 'A client has joined.');
-  });
-
   // Get a reference to the twitter stream and start broadcasting to
   // the connected user
   getTwitterStream(function(err, twitterStream) {
+    // Let client know that connection to Twitter was successful
+    socket.emit('status', 'connected to twitter stream');
+
+    // Send tweet to client
     twitterStream.on('tweet', function(tweet) {
       console.log('Tweet: [%s]: %s', tweet.id, tweet.user.screen_name);
       socket.emit('tweet', tweet);
     });
 
+    // @TODO: Handle error messages from Twitter connection
     twitterStream.on('error', function(error) {
-      console.log("Error: " + error);
+      console.log("Error: ", error);
     });
   });
-
-
 
 });
