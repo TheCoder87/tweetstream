@@ -5,6 +5,7 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var TweeterLib = require('./modules/tweeter');
+var buffer = require('./modules/tweetBuffer');
 
 var port = process.env.PORT || 3000;
 var stream, tweeter;
@@ -37,6 +38,12 @@ var getTwitterStream = function(cb) {
       stream = newStream;
       cb(err, newStream);
     });
+
+    stream.on('tweet', function(tweet) {
+      console.log('Tweet: [%s]: %s', tweet.id, tweet.user.screen_name);
+      buffer.add(tweet);
+      io.emit('tweet', tweet);
+    });
   }
 };
 
@@ -44,13 +51,18 @@ server.listen(port, function() {
   console.log('Server running at http://localhost:%s', port);
 });
 
+
+
 io.on('connection', function(socket) {
   console.log('%%%   Client connected...   %%%');
+  // Get a buffer of any tweets
+  var tweetBuffer = buffer.get();
 
   // Send some configuration information to client
   socket.emit('config', {
     'streamPath': streamPath,
-    'streamParams': streamParams
+    'streamParams': streamParams,
+    'prime': tweetBuffer
   });
 
   // Get a reference to the twitter stream and start broadcasting to
@@ -59,11 +71,12 @@ io.on('connection', function(socket) {
     // Let client know that connection to Twitter was successful
     socket.emit('status', 'connected to twitter stream');
 
-    // Send tweet to client
-    twitterStream.on('tweet', function(tweet) {
-      console.log('Tweet: [%s]: %s', tweet.id, tweet.user.screen_name);
-      socket.emit('tweet', tweet);
-    });
+    // // Send tweet to client
+    // twitterStream.on('tweet', function(tweet) {
+    //   console.log('Tweet: [%s]: %s', tweet.id, tweet.user.screen_name);
+    //   buffer.add(tweet);
+    //   socket.emit('tweet', tweet);
+    // });
 
     // @TODO: Handle error messages from Twitter connection
     twitterStream.on('error', function(error) {

@@ -16,6 +16,14 @@
     });
     var trackingDetails = '<small class="tracking"><br />tracking ' + trackingTags + '</small>';
     $(trackingDetails).appendTo(title);
+
+    // If there is a buffer of tweets sent, add those to the ui
+    if (config.prime) {
+      $(config.prime).each(function(id, tweetObj) {
+        console.log('priming tweet: ', tweetObj);
+        handleTweet(tweetObj);
+      });
+    }
   };
 
   // Add any status messages to the .messages div
@@ -64,9 +72,9 @@
   // Append tweet to DOM
   var handleTweet = function(tweetObject) {
     console.log(tweetObject);
+    var tweet = formatTweet(tweetObject);
+    $(tweet).prependTo(tweets).hide().fadeIn('slow');
     if (tweets.length) {
-      var tweet = formatTweet(tweetObject);
-      $(tweet).prependTo(tweets).hide().fadeIn('slow');
       trimTweets();
     }
   };
