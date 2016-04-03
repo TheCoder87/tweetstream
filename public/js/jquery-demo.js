@@ -59,11 +59,18 @@
   var formatTweet = function(tweetObject) {
     var html = '';
     var text = tweetObject.text;
+    var name = tweetObject.user.name;
     var username = tweetObject.user.screen_name;
+    var profileImg = tweetObject.user.profile_image_url_https;
 
-    html += '<div class="tweet">';
-    html += '<b>' + username + ':</b> &nbsp;';
-    html += text;
+    html += '<div class="tweet media">';
+    html += ' <div class="media-left">';
+    html += '   <img class="media-object" src="' + profileImg + '" alt="profile image" />';
+    html += ' </div>';
+    html += ' <div class="media-body">';
+    html += '   <h5 class="media-heading">' + name + ' <small>(' + username + ')</small></h5>';
+    html +=     text;
+    html += ' </div>';
     html += '</div>';
 
     return html;
