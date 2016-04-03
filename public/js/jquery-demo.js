@@ -8,9 +8,13 @@
   // Do setup based on configs passed back from Socket.io
   var setupWidget = function(config) {
     console.log('setup with config', config);
-    var hashTag = config.streamParams.track;
+    var hashTags = config.streamParams.track;
     $('.tracking', base).remove();
-    var trackingDetails = '<small class="tracking"><br />tracking <span class="label label-default">#' + hashTag + '</span></small>';
+    var trackingTags = '';
+    $(hashTags).each(function(id, hashTag) {
+      trackingTags += '<span class="label label-default">#' + hashTag + '</span>&nbsp;';
+    });
+    var trackingDetails = '<small class="tracking"><br />tracking ' + trackingTags + '</small>';
     $(trackingDetails).appendTo(title);
   };
 

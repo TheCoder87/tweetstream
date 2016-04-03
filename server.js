@@ -11,7 +11,7 @@ var stream, tweeter;
 
 // @TODO: Make these configurable
 var streamPath = 'statuses/filter';
-var streamParams = { track: 'tcot' };
+var streamParams = { track: ['javascript', 'angularjs', 'jquery', 'nodejs', 'socketio'] };
 
 // Initialize the twitter library
 var tweeter = TweeterLib({
