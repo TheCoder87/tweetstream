@@ -71,13 +71,6 @@ io.on('connection', function(socket) {
     // Let client know that connection to Twitter was successful
     socket.emit('status', 'connected to twitter stream');
 
-    // // Send tweet to client
-    // twitterStream.on('tweet', function(tweet) {
-    //   console.log('Tweet: [%s]: %s', tweet.id, tweet.user.screen_name);
-    //   buffer.add(tweet);
-    //   socket.emit('tweet', tweet);
-    // });
-
     // @TODO: Handle error messages from Twitter connection
     twitterStream.on('error', function(error) {
       console.log("Error: ", error);
