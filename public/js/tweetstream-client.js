@@ -6,6 +6,8 @@
   // Initialization function to run on ready
   TweetStream.connect = function(opts, cb) {
     var options = {};
+
+    // Which server to connect to
     if (opts.server) {
       options.server = opts.server;
     }
