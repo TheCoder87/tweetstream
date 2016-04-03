@@ -2,24 +2,38 @@
 (function(TweetStream, $) {
   var base, title, tweets, messages;
 
+  // Do setup based on configs passed back from Socket.io
   var setupWidget = function(config) {
     console.log('setup with config', config);
     var hashTag = config.streamParams.track;
     $('.tracking', base).remove();
-    var trackingDetails = '<small class="tracking"><br />tracking #' + hashTag + '</small>';
+    var trackingDetails = '<small class="tracking"><br />tracking <span class="label label-default">#' + hashTag + '</span></small>';
     $(trackingDetails).appendTo(title);
   };
 
   // Add any status messages to the .messages div
   var handleStatusMessage = function(statusMsg) {
-    // console.log('status: ', statusMsg);
     if (messages.length) {
       console.log('prepend message:', statusMsg);
+
+      // Create a timeStamp
+      var timeStamp = '';
+      var date = new Date();
+      timeStamp += date.getHours();
+      var minutes = date.getMinutes();
+      if (minutes < 10) minutes = '0' + minutes;
+      var seconds = date.getSeconds();
+      if (seconds < 10) seconds = '0' + seconds;
+      timeStamp += ':' + minutes;
+      timeStamp += ':' + seconds;
+
+      // Craft the message
       var msg =  '<div class="alert alert-info" role="alert">';
-          msg += '<span class="alert-link">';
-          msg += '<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>&nbsp;';
-          msg += statusMsg;
-          msg += '</span>';
+          msg += '  <span class="alert-link">';
+          msg += '    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>&nbsp;';
+          msg += '    <em>' + timeStamp + '</em>&nbsp;';
+          msg +=      statusMsg;
+          msg += '  </span>';
           msg += '</div>';
 
       $(msg).prependTo(messages);
@@ -28,9 +42,6 @@
 
   // Template function for formatting tweet object
   var formatTweet = function(tweetObject) {
-    console.log('formatting tweet');
-    console.log(tweetObject);
-
     var html = '';
     var text = tweetObject.text;
     var username = tweetObject.user.screen_name;
@@ -45,6 +56,7 @@
 
   // Append tweet to DOM
   var handleTweet = function(tweetObject) {
+    console.log(tweetObject);
     if (tweets.length) {
       var tweet = formatTweet(tweetObject);
       $(tweet).prependTo(tweets);

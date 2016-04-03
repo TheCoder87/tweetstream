@@ -2,7 +2,14 @@
 (function(TweetStream, $) {
 
   var init = function() {
-    console.log('@TODO: AngularJS demo...');
+    // Target DOM elements
+    base = $('#angularjs-demo');
+    title = base.find('.title');
+    messages = base.find('.messages');
+    tweets = base.find('.tweets');
+
+    // Add FPO content
+    $('<code>@TODO: Create AngularJS demo...</code>').prependTo(messages);
   };
 
   $(function() {
