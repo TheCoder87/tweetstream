@@ -1,15 +1,16 @@
 // Demo using TweetStream client and jQuery
 (function(TweetStream, $) {
-  var Client = {};
   var base, title, tweets, messages;
 
   var setupWidget = function(config) {
     console.log('setup with config', config);
     var hashTag = config.streamParams.track;
-    var trackingDetails = '<br /><small>tracking #' + hashTag + '</small>';
+    $('.tracking', base).remove();
+    var trackingDetails = '<small class="tracking"><br />tracking #' + hashTag + '</small>';
     $(trackingDetails).appendTo(title);
   };
 
+  // Add any status messages to the .messages div
   var handleStatusMessage = function(statusMsg) {
     // console.log('status: ', statusMsg);
     if (messages.length) {
@@ -74,5 +75,4 @@
     init();
   });
 
-  return Client;
 })(TweetStream, jQuery);
