@@ -5,7 +5,6 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var TweeterLib = require('./modules/tweeter');
-var buffer = require('./modules/tweetBuffer');
 
 var port = process.env.PORT || 3000;
 var stream, tweeter;
@@ -41,7 +40,6 @@ var getTwitterStream = function(cb) {
 
     stream.on('tweet', function(tweet) {
       console.log('Tweet: [%s]: %s', tweet.id, tweet.user.screen_name);
-      buffer.add(tweet);
       io.emit('tweet', tweet);
     });
   }
@@ -51,12 +49,10 @@ server.listen(port, function() {
   console.log('Server running at http://localhost:%s', port);
 });
 
-
-
 io.on('connection', function(socket) {
   console.log('%%%   Client connected...   %%%');
   // Get a buffer of any tweets
-  var tweetBuffer = buffer.get();
+  var tweetBuffer = tweeter.getBuffer();
 
   // Send some configuration information to client
   socket.emit('config', {
