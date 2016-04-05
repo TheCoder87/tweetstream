@@ -1,15 +1,8 @@
+"use strict";
+
 (function(){
   angular.module('tweetStream', [])
-  .controller('tweetStreamCtrl', tweetStreamCtrl)
-  .service('tweetStreamSrvc', tweetStreamSrvc);
-
-  tweetStreamCtrl.$inject = ['$scope', tweetStreamSrvc];
-  function tweetStreamCtrl($scope, tweetStreamSrvc) {
-    var tweets = [];
-
-    $scope.tweets = tweetStreamSrvc.init;
-    $scope.$apply();
-  }
+    .service('tweetStreamSrvc', tweetStreamSrvc);
 
   function tweetStreamSrvc() {
 
