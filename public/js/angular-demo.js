@@ -1,18 +1,39 @@
-// Demo using TweetStream client and AngularJS
-(function(TweetStream, $) {
+(function(){
+  angular.module('tweetStream', [])
+  .controller('tweetStreamCtrl', tweetStreamCtrl)
+  .service('tweetStreamSrvc', tweetStreamSrvc);
 
-  var init = function() {
-    // Target DOM elements
-    base = $('#angularjs-demo');
-    title = base.find('.title');
-    messages = base.find('.messages');
-    tweets = base.find('.tweets');
+  tweetStreamCtrl.$inject = ['$scope', tweetStreamSrvc];
+  function tweetStreamCtrl($scope, tweetStreamSrvc) {
+    var tweets = [];
 
-    // Add FPO content
-    $('<code>@TODO: Create AngularJS demo...</code>').prependTo(messages);
-  };
+    $scope.tweets = tweetStreamSrvc.init;
+    $scope.$apply();
+  }
 
-  $(function() {
-    init();
-  });
-})(TweetStream, jQuery);
+  function tweetStreamSrvc() {
+
+    var init = function() {
+      var tweets;
+      var maxTweets = 8;
+      var server = 'http://localhost:3000';
+      var socket = io.connect(server);
+      socket.on('config', function (config) {
+        console.log('config', config);
+        var trimmedPrime = config.prime.reverse().slice(0, maxTweets);
+        tweets = trimmedPrime;
+      });
+      socket.on('tweet', function (tweet) {
+        tweets.unshift(tweet);
+        if (tweets.length > maxTweets) {
+          tweets.pop();
+        }
+      });
+      return tweets;
+    };
+
+    return {
+      init: init
+    };
+  }
+})();
