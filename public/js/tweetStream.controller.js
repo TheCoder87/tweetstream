@@ -2,7 +2,7 @@
   angular.module('tweetStream', [])
   .controller('tweetStreamCtrl', tweetStreamCtrl);
 
-  tweetStreamCtrl.$inject = ['$scope', tweetStreamSrvc];
+  tweetStreamCtrl.$inject = ['$scope', 'tweetStreamSrvc'];
   function tweetStreamCtrl($scope, tweetStreamSrvc) {
     var tweets = [];
 
