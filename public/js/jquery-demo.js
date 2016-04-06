@@ -121,7 +121,7 @@
   };
 
   $(function() {
-    init();
+    // init();
   });
 
 })(TweetStream, jQuery);
