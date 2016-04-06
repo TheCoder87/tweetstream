@@ -12,7 +12,6 @@
 
   <script src="js/tweetstream-client.js"></script>
   <script src="js/jquery-demo.js"></script>
-  <script src="js/angular-demo.js"></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap-theme.min.css" />
@@ -20,7 +19,7 @@
 
   <link rel="stylesheet" href="css/demo-front.css" />
 </head>
-<body>
+<body  ng-controller="tweetStreamCtrl">
   <nav class="navbar navbar-inverse navbar-fixed-top">
      <div class="container">
        <div class="navbar-header">
@@ -66,7 +65,7 @@
         <div class="col-sm-6 demo demo-angularjs">
 
           <!-- Angular.js Demo -->
-          <div class="panel panel-default twitter-widget" id="angularjs-demo" ng-controller="tweetStreamCtrl">
+          <div class="panel panel-default twitter-widget" id="angularjs-demo">
             <div class="panel-heading">
               <h3 class="panel-title title">TweetStream AngularJS demo</h3>
             </div>
@@ -83,9 +82,11 @@
                 </div>
               </div>
             </div>
+
+
           </div>
         </div>
-
+     </div>
    </div><!-- /.container -->
 
 </body>
