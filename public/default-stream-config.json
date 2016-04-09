@@ -1,0 +1,8 @@
+{
+  "stream": {
+    "path": "statuses/filter",
+    "params": {
+      "track": ["javascript", "angularjs", "jquery", "nodejs", "socketio"]
+    }
+  }
+}
