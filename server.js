@@ -6,9 +6,11 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var TweeterLib = require('./modules/tweeter');
 var request = require('request');
+var Refresh = require('./modules/refresh');
 
 var port = process.env.PORT || 3000;
 var streamJSONUrl = process.env.STREAMJSONURL || 'http://localhost:' + port + '/default-stream-config.json';
+var refresh;
 var stream, tweeter;
 var streamPath;// Example: 'statuses/filter';
 var streamParams; // Example: { track: ['javascript', 'angularjs', 'jquery', 'nodejs', 'socketio'] };
@@ -20,6 +22,9 @@ var tweeter = TweeterLib({
   access_token: process.env.ACCESS_TOKEN,
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
+
+// Set up route to handle requests to update
+refresh = Refresh(app);
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/bower_components'));
