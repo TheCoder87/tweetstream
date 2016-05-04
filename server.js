@@ -43,7 +43,7 @@ var loadStreamConfig = function(JSONUrl, cb) {
       var returnError = (!err) ? res.statusCode : err;
       cb(returnError);
     }
-  })
+  });
 };
 
 // Returns active stream to callback
