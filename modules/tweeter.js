@@ -1,9 +1,73 @@
+/**
+ * @file: Just an interface for our Twitter library
+ */
+
 var Twit = require('twit');
 var _ = require('lodash');
 var buffer = require('./tweetBuffer');
 
 var Tweeter = {};
-var client, stream;
+var client, stream, streamOptions;
+
+/**
+ * Take flat object and construct a more readable twitter config
+ * @param  {object}   opts Flat object like env files
+ * @param  {Function} cb   Callback function
+ * @return {object}        More friendly object
+ */
+var createStreamConfigObject = function(opts) {
+  var config = {};
+  config.path = opts.STREAM_PATH;
+  if (opts.STREAM_PARAMS_TRACK) {
+    config.params = {};
+    // @TODO: Loop through all opts that start with STREAM_PARAMS_ and auto-parse
+    var track = opts.STREAM_PARAMS_TRACK.split(',').map(function(param, id) {
+      return param.trim();
+    });
+    if (track.length) {
+      config.params.track= track;
+    }
+  }
+  return config;
+};
+
+Tweeter.start = function(opts, cb) {
+  // Allow signature to pass no cb or cb as first param
+  if (opts == null || _.isFunction(opts)) {
+    // Assume we just want to resume current stream
+    if (_.isFunction(opts)) {
+      // Allow passing of callback as first param
+      cb = opts;
+    }
+  }
+
+  if (stream) {
+    // @TODO: test if deep equals tests properly
+    if (_.eq(opts, streamOptions)) {
+      // Same options passed, just restart
+      stream.start();
+      cb(null);///
+    } else {
+      // Create a new stream
+      streamOptions = createStreamConfigObject(opts);
+      stream = client.stream(streamOptions.path, streamOptions.params);
+      cb(null, stream);
+    }
+  } else {
+    // Handel errors where no stream is initialized
+    if (cb) {
+      cb('stream no initialized');
+    } else {
+      throw 'No stream or callback handler';
+    }
+  }
+
+};
+
+Tweeter.stop = function(cb) {
+  stream.stop();
+  cb(null);
+};
 
 // Creates a Twitter stream
 Tweeter.createStream = function(path, params, cb) {
@@ -32,6 +96,6 @@ module.exports = function(credentials) {
     'access_token',
     'access_token_secret'
   ];
-  client = new Twit(credentials);
+  Twitter.client = client = new Twit(credentials);
   return Tweeter;
 };
