@@ -2,12 +2,25 @@
  * @file: Just an interface for our Twitter library
  */
 
-var Twit = require('twit');
+var EventEmitter = require('events');
+var util = require('util');
 var _ = require('lodash');
+var Twit = require('twit');
 var buffer = require('./tweetBuffer');
 
 var Tweeter = {};
+
 var client, stream, streamOptions;
+
+
+// Define an EventEmitter
+function TweetEmitter() {
+  EventEmitter.call(this);
+}
+util.inherits(TweetEmitter, EventEmitter);
+
+// Create a new EventEmitter for modules to listen to
+Tweeter.events = new TweetEmitter();
 
 /**
  * Take flat object and construct a more readable twitter config
@@ -38,28 +51,45 @@ Tweeter.start = function(opts, cb) {
     if (_.isFunction(opts)) {
       // Allow passing of callback as first param
       cb = opts;
+      opts = null;
     }
   }
 
   if (stream) {
-    // @TODO: test if deep equals tests properly
-    if (_.eq(opts, streamOptions)) {
-      // Same options passed, just restart
-      stream.start();
-      cb(null);///
-    } else {
-      // Create a new stream
-      streamOptions = createStreamConfigObject(opts);
-      stream = client.stream(streamOptions.path, streamOptions.params);
-      cb(null, stream);
-    }
+    console.log('@TODO: implement restart!!!!!!!!');
+    // // @TODO: test if deep equals tests properly
+    // if (_.eq(opts, streamOptions)) {
+    //   // Same options passed, just restart
+    //   stream.start();
+    //   cb(null);///
+    // } else {
+    //   // Create a new stream
+    //   streamOptions = createStreamConfigObject(opts);
+    //   stream = client.stream(streamOptions.path, streamOptions.params);
+    //   cb(null, stream);
+    // }
   } else {
-    // Handel errors where no stream is initialized
-    if (cb) {
-      cb('stream no initialized');
+    // Initialize stream for the first time
+    if (opts) {
+      streamOptions = createStreamConfigObject(opts);
+      console.log('initializing stream for the first time....', streamOptions);
+      stream = client.stream(streamOptions.path, streamOptions.params);
+
+      // @TODO: Look at auto-binding or better emit binding
+      stream.on('tweet', function (tweet) {
+        Tweeter.events.emit('tweet', tweet);
+      });
+
+      if (cb) cb(null);
     } else {
-      throw 'No stream or callback handler';
+      // Handel errors where no stream is initialized and there are no opts
+      if (cb) {
+        cb('stream no initialized');
+      } else {
+        throw 'No stream or callback handler';
+      }
     }
+
   }
 
 };
@@ -96,6 +126,7 @@ module.exports = function(credentials) {
     'access_token',
     'access_token_secret'
   ];
-  Twitter.client = client = new Twit(credentials);
+  client = new Twit(credentials);
+  Tweeter.events.emit('created');
   return Tweeter;
 };

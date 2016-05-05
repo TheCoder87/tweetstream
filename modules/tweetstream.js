@@ -37,13 +37,16 @@ TweetStream.events = new TSEmitter();
  * @return {server, io}          HTTP server and Socket.io instance
  */
 var init_socketio = function(config, server, cb) {
+  console.log('::: init_socketio');
   if (server) {
+    console.log(' -> attach socket.io to existing server');
     // Attach Socket.io to existing
     expressServer = server;
     io = SocketIO(server);
     cb(null, server, io);
   } else {
     // Spin up our own server.
+    console.log(' -> attach socket.io to NEW server');
     if (config.port) {
       expressApp = express();
       expressServer = require('http').createServer(expressApp);
@@ -59,42 +62,78 @@ var init_socketio = function(config, server, cb) {
 };
 
 var init_defaultListeners = function(io, cb) {
+  console.log('::: init_defaultListeners');
+  twitterStream.on('tweet', function(tweet) {
+    console.log('default: %s [%s]', tweet.user.screen_name, tweet.id_str);
+    // broadcast tweet to all connected
+    io.emit('tweet', tweet);
+    TweetStream.events.emit('tweet', tweet);
+  });
 
+  io.on('connection', function() {
+    console.log('CONNECTION');
+  });
+
+  TweetStream.events.emit('default-listeners');
+  cb(null);
 };
 
 var init_twitterStream = function(config, cb) {
-  if (_.has(config, ['API_KEY', 'API_SECRET', 'ACCESS_TOKEN', 'ACCESS_TOKEN_SECRET']) ) {
+  console.log('::: init_twitterStream');
+  // Check that we have all apiCredentials first
+  var requiredKeys = ['API_KEY', 'API_SECRET', 'ACCESS_TOKEN', 'ACCESS_TOKEN_SECRET'];
+  var apiCredentials = _.pick(config, requiredKeys);
+  var passedKeys = _.keys(apiCredentials);
+
+  if ( passedKeys.length === requiredKeys.length ) {
     // Initialize the (abstracted) Twitter library
-    TweetStream.twitter = TweeterLib({
-      consumer_key: config.API_KEY,
-      consumer_secret: config.API_SECRET,
-      access_token: config.ACCESS_TOKEN,
-      access_token_secret: config.ACCESS_TOKEN_SECRET
+    console.log(' -> create twitter instance');
+    TweetStream.tweeter = TweeterLib({
+      consumer_key: apiCredentials.API_KEY,
+      consumer_secret: apiCredentials.API_SECRET,
+      access_token: apiCredentials.ACCESS_TOKEN,
+      access_token_secret: apiCredentials.ACCESS_TOKEN_SECRET
     });
-    cb(null, TweetStream.twitter);
+
+    cb(null, TweetStream.tweeter);
 
   } else {
-    cb('Twitter app credentials not supplied');
+    var errMsg = 'Twitter app credentials not supplied: ';
+    var missingCount = requiredKeys.length - passedKeys.length;
+    if (missingCount === 0) missingCount = requiredKeys.length
+    errMsg += 'Missing ' + missingCount + ' keys';
+    var passed = passedKeys.join(',');
+    errMsg += ' [' + passed + ']';
+
+    cb(errMsg);
   }
 };
 
 
 module.exports = function(config, server, cb) {
+  console.log('::: init ts instance');
   // Attach Socket.io to server
   init_socketio(config, server, function(err, httpServer, io) {
     if (err) cb(err);
     // Initialize connection to Twitter streaming API
-    init_twitterStream(config, function(err) {
+    init_twitterStream(config, function(err, tweeter) {
       // @TODO: Set up Refresh instance
       // TweetStream.refresh = Refresh(config);
       // // Set up route to handle requests to update
       // refresh = Refresh(app);
 
-      // Setup some default callbacks
-      init_defaultListeners(io, function(err) {
-        // Finally, make callback
-        cb(err, TweetStream.events);
-      });
+      if (!err) {
+        twitterStream = tweeter.events;
+
+        // Setup some default callbacks
+        init_defaultListeners(io, function(err) {
+          tweeter.start(config);
+          // Finally, make callback
+          cb(err, TweetStream.events);
+        });
+      } else {
+        cb(err);
+      }
     });
   });
   return TweetStream;

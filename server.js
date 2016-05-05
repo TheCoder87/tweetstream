@@ -24,6 +24,12 @@ app.use(express.static(__dirname + '/bower_components'));
 
 // Create TweetStream instance and set up listeners
 tweetstream = TweetStream(config, server, function(err) {
+  if (err) {
+    console.error(err);
+    // throw new Error(err);
+  } else {
+    console.log('%%% TweetStream instance created', arguments);
+  }
   // tweetstream.events.on('tweet', function(tweet) {
   //   console.log('Tweet: [%s]: %s', tweet.id, tweet.user.screen_name);
   //   io.emit('tweet', tweet);
