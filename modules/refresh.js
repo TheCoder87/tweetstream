@@ -7,7 +7,7 @@ var app;
 var refreshEndpoint = process.env.REFRESH_PATH || '/refresh-settings';
 
 // REST URL to pull config data from
-var refreshURL = process.env.REFRESH_URL || 'http://localhost:3000/api/tweetstream/config';
+var refreshURL = process.env.REFRESH_URL || 'http://localhost:3000/api/tweetstream/refresh-config';
 
 // Minimum wait taime
 var refreshDelay = process.env.REFRESH_DELAY || 3000;
